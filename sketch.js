@@ -56,10 +56,10 @@ function drawFace() {
       noStroke();
       ellipse(x, y, 10);
     }
-
   }
 }
 
+// draw the mf faceeeeeeee
 function draw() {
   background(0,1);
   drawFace();
