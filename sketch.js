@@ -5,6 +5,7 @@ let predictions = [];
 function setup() {
   createCanvas(640, 480);
   // create and hide webcam
+  myVid = createCapture(VIDEO);
   myVid.size(width, height);
   myVid.hide();
   /*
@@ -20,7 +21,7 @@ function setup() {
 }
 
 // confirm model is loaded
-function modelLoad() {
+function modelLoaded() {
   console.log('loaded');
 }
 
@@ -35,7 +36,7 @@ function drawFace() {
   for (let i = 0; i < predictions.length; i++) {
     // get keypoints from annotations
     const si1 = predictions[i].annotations.leftEyebrowUpper;
-    const si2 = predicitons[i].annotations.rightEyebrowUpper;
+    const si2 = predictions[i].annotations.rightEyebrowUpper;
 
     // draw points of left eyebrow
     for (let j = 0; j < si1.length; j++) {
@@ -48,7 +49,7 @@ function drawFace() {
     }
 
     // draw points of right eyebrow
-    for (let a = 0; a < predictions.length; a ++) {
+    for (let a = 0; a < si2.length; a ++) {
       const x = si2[a][0];
       const y = si2[a][1];
 
@@ -61,6 +62,11 @@ function drawFace() {
 
 // draw the mf faceeeeeeee
 function draw() {
-  background(0,1);
+  background(0,0,0,0);
+
+ 
+  image(myVid, 0,0,width,height);
+  pop();
   drawFace();
+
 }
