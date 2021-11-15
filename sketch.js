@@ -2,6 +2,9 @@
 let myVid;
 let predictions = [];
 
+let theShader;
+let shaderTexture;
+
 function setup() {
   createCanvas(640, 480);
   // create and hide webcam
