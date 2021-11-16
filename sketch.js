@@ -1,7 +1,8 @@
 let facemesh;
 let myVid;
 let predictions = [];
-
+let faces = [];
+let max = 50;
 /** SHADER STUFF **/
 let theShader;
 let shaderTexture;
@@ -86,8 +87,16 @@ function draw() {
   translate(-width/2,-height/2,0); 
   image(myVid, 0, 0, width, height);
   image(pg, 0,0, width, height);
-
+  for (let i = 0; i < max; i++){
+    if (faces.length < max) {
+      drawFaceMesh();
+    }
+    else {
+      faces.splice(0,1);
+    }
+  }
   drawFaceMesh();
+  console.log(faces.length);
 }
 
 function drawFaceMesh() {
@@ -108,8 +117,8 @@ function drawFaceMesh() {
 
   rect(0,0, 100, 100);
 
-  beginShape();
-  for (let g = 0; g < silhoutte.length + 3; g++) {
+  pg.beginShape();
+  for (let g = 0; g < silhoutte.length; g++) {
     let index = g;
     if (g >= silhoutte.length) {
       // Use modulo to iterate through the additional points needed to complete the curve
@@ -122,11 +131,11 @@ function drawFaceMesh() {
     // vertex(x, y,);
     // vertex(x, y);
     // vertex(x, y);
-    vertex(x, y, 0, -1, 4);
-    vertex(x, y, 0, -1, -1);
-    vertex(x, y, 0, 4, -1);
+    pg.curveVertex(x, y);
+    
   }
-  endShape();
+  pg.endShape();
+  faces.push(pg);
   
 
   /*
