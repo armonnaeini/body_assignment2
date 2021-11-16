@@ -5,8 +5,22 @@ let predictions = [];
 let theShader;
 let shaderTexture;
 
+function preload() {
+  // load the shader
+  theShader = loadShader('texture.vert', 'texture.frag');
+  console.log('shader loaded');
+
+}
+
 function setup() {
-  createCanvas(640, 480);
+  //createCanvas(640, 480, WEBGL);
+  createCanvas(640, 480, WEBGL);
+  noStroke();
+
+  //initialize the createGraphics layer
+  shaderTexture = createGraphics(640, 480, WEBGL);
+  shaderTexture.noStroke();
+
   // create and hide webcam
   myVid = createCapture(VIDEO);
   myVid.size(width, height);
@@ -21,11 +35,12 @@ function setup() {
   const facemesh = ml5.facemesh(myVid, modelLoaded);
   // when we receive a prediction, call gotFace
   facemesh.on('predict', (results) => gotFace(results));
+  console.log('setup successful');
 }
 
 // confirm model is loaded
 function modelLoaded() {
-  console.log('loaded');
+  console.log('model loaded');
 }
 
 // listen to new 'predict' events
@@ -35,6 +50,7 @@ function gotFace(results) {
 }
 
 function drawFace() {
+
   // iterate through all predictions – one per detected face
   for (let i = 0; i < predictions.length; i++) {
     // get keypoints from annotations
@@ -46,9 +62,9 @@ function drawFace() {
       const x = si1[j][0];
       const y = si2[j][1];
 
-      fill('white');
+      // fill('white');
       noStroke();
-      ellipse(x,y,10);
+      ellipse(x,y, 20, 20, 100);
     }
 
     // draw points of right eyebrow
@@ -56,20 +72,27 @@ function drawFace() {
       const x = si2[a][0];
       const y = si2[a][1];
 
-      fill('white');
+
+      // fill('white');
       noStroke();
-      ellipse(x, y, 10);
+      ellipse(x, y, 20, 20, 100);
     }
   }
 }
 
-// draw the mf faceeeeeeee
+// draw the mf face
 function draw() {
-  background(0,0,0,0);
 
+  shaderTexture.shader(theShader);
+  shaderTexture.rect(0,0, width, height);
+
+  // background(255);
+
+  texture(shaderTexture);
+  //moves our drawing origin to the top left corner
+  translate(-width/2,-height/2,0); 
  
   image(myVid, 0,0,width,height);
-  pop();
   drawFace();
 
 }
