@@ -1,40 +1,34 @@
-//assignment 2 – armon naeini
+let facemesh;
 let myVid;
 let predictions = [];
 
+/** SHADER STUFF **/
 let theShader;
 let shaderTexture;
 
+/** LOAD SHADER **/
 function preload() {
-  // load the shader
   theShader = loadShader('texture.vert', 'texture.frag');
   console.log('shader loaded');
-
 }
 
 function setup() {
-  //createCanvas(640, 480, WEBGL);
   createCanvas(640, 480, WEBGL);
-  noStroke();
+  myVid = createCapture(VIDEO);
+  myVid.size(width, height);
 
-  //initialize the createGraphics layer
+  facemesh = ml5.facemesh(myVid, modelLoaded);
+
+  facemesh.on('predict', results => {
+    predictions = results;
+  });
+
+  myVid.hide();
+
+  /** SHADER STUFF **/
   shaderTexture = createGraphics(640, 480, WEBGL);
   shaderTexture.noStroke();
 
-  // create and hide webcam
-  myVid = createCapture(VIDEO);
-  myVid.size(width, height);
-  myVid.hide();
-  /*
-    - create instance of facemesh
-    - first parameter is video object input
-    - second parameter is optional callback function
-    - the callback function is simply to confirm model
-      has been loaded
-  */
-  const facemesh = ml5.facemesh(myVid, modelLoaded);
-  // when we receive a prediction, call gotFace
-  facemesh.on('predict', (results) => gotFace(results));
   console.log('setup successful');
 }
 
@@ -43,14 +37,15 @@ function modelLoaded() {
   console.log('model loaded');
 }
 
+/*
 // listen to new 'predict' events
 // load array of results into predictions []
 function gotFace(results) {
   predictions = results;
 }
+*/
 
-function drawFace() {
-
+function drawEyebrows() {
   // iterate through all predictions – one per detected face
   for (let i = 0; i < predictions.length; i++) {
     // get keypoints from annotations
@@ -64,7 +59,7 @@ function drawFace() {
 
       // fill('white');
       noStroke();
-      ellipse(x,y, 20, 20, 100);
+      ellipse(x,y, 40, 40, 100);
     }
 
     // draw points of right eyebrow
@@ -72,27 +67,35 @@ function drawFace() {
       const x = si2[a][0];
       const y = si2[a][1];
 
-
       // fill('white');
       noStroke();
-      ellipse(x, y, 20, 20, 100);
+      ellipse(x, y, 40, 40, 100);
     }
   }
 }
 
 // draw the mf face
 function draw() {
-
-  shaderTexture.shader(theShader);
-  shaderTexture.rect(0,0, width, height);
-
-  // background(255);
-
-  texture(shaderTexture);
-  //moves our drawing origin to the top left corner
+  // shaderTexture.shader(theShader);
+  // shaderTexture.rect(0,0, width, height);
   translate(-width/2,-height/2,0); 
  
-  image(myVid, 0,0,width,height);
-  drawFace();
+  image(myVid, 0, 0, width, height);
+  drawFaceMesh();
+}
 
+function drawFaceMesh() {
+  for (let i = 0; i < predictions.length; i+=1) {
+    const keypoints = predictions[i].scaledMesh;
+    console.log(keypoints);
+
+    
+    for (let j = 0; j < keypoints.length; j+=1) {
+      const [x,y] = keypoints[j];
+
+      noStroke();
+      fill(0, 255, 0);
+      ellipse(x, y, 7, 7);
+    }
+  }
 }
